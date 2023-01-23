@@ -1,5 +1,0 @@
-{
-  "SMSFunctionZipDeployPath": "C:\\Users\\Administrator\\source\\repos\\SMSQueueHandler\\SMSQueueHandler\\bin\\Debug\\net6.0\\zipdeploy.zip",
-  "WhatsAppFunctionZipDeployPath": "C:\\Users\\Administrator\\source\\repos\\WhatsappWebhookToDataverse\\bin\\Debug\\net6.0\\zipdeploy.zip",
-  "CosmosRESTZipDeployPath": "C:\\Users\\Administrator\\source\\repos\\RESTAPI\\RESTAPI\\bin\\Debug\\net6.0\\zipdeploy.zip"
-}
