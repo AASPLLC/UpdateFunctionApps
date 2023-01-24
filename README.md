@@ -17,4 +17,4 @@ These values should point to the location of the current version of the ZIP file
 }
 ```
 
-This application is dependent on the following library: [AASP Global Library](https://github.com/AASPWayne/AASPGlobalLibrary)
+This application is dependent on the following library: [AASP Global Library](https://github.com/wrharper/AASPGlobalLibrary)
