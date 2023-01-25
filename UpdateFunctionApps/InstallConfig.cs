@@ -63,11 +63,9 @@ namespace UpdateFunctionApps
             comboBox1.Items.AddRange(names.ToArray());
             comboBox1.SelectedIndex = 0;
 
-            var disco = "https://globaldisco.crm.dynamics.com/api/discovery/v1.0/Instances";
-
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await TokenHandler.GetGlobalDynamicsImpersonationToken());
-            HttpRequestMessage request = new(new("GET"), disco);
+            HttpRequestMessage request = new(new("GET"), Globals.Dynamics365Distro);
             _ = await httpClient.SendAsync(request);
         }
 
@@ -80,6 +78,13 @@ namespace UpdateFunctionApps
 
         private async void SelectSubscription_Click(object sender, EventArgs e)
         {
+            smsFunctionCB.Items.Clear();
+            whatsAppFunctionCB.Items.Clear();
+            selectCosmosCB.Items.Clear();
+            smsFunctionCB.Items.Add("");
+            whatsAppFunctionCB.Items.Add("");
+            selectCosmosCB.Items.Add("");
+
             SelectedSubscription = subids[comboBox1.SelectedIndex];
             SelectedGroup = await SelectedSubscription.GetResourceGroups().GetAsync("SMSAndWhatsAppResourceGroup");
 
@@ -160,22 +165,28 @@ namespace UpdateFunctionApps
                 selectCosmosCB.Enabled = false;
                 outputRT.Text = "Getting Ready...";
 #pragma warning disable CS8604
-                var smsSiteResource = (await SelectedGroup.GetWebSiteAsync(smsFunctionCB.Text)).Value;
-                PublishingUserResource user = (await smsSiteResource.GetPublishingCredentialsAsync(WaitUntil.Completed)).Value;
-                outputRT.Text += Environment.NewLine + "Zip Deploy Started for SMS Function";
-                await FunctionAppHandler.ZipDeploy(user, json.SMSFunctionZipDeployPath);
-                outputRT.Text += Environment.NewLine + "Zip Deploy for SMS Function finished";
+                if (smsFunctionCB.Text != "")
+                {
+                    var smsSiteResource = (await SelectedGroup.GetWebSiteAsync(smsFunctionCB.Text)).Value;
+                    PublishingUserResource user = (await smsSiteResource.GetPublishingCredentialsAsync(WaitUntil.Completed)).Value;
+                    outputRT.Text += Environment.NewLine + "Zip Deploy Started for SMS Function";
+                    await FunctionAppHandler.ZipDeploy(user, json.SMSFunctionZipDeployPath);
+                    outputRT.Text += Environment.NewLine + "Zip Deploy for SMS Function finished";
+                }
 
-                var whatsAppSiteResource = (await SelectedGroup.GetWebSiteAsync(whatsAppFunctionCB.Text)).Value;
-                user = (await whatsAppSiteResource.GetPublishingCredentialsAsync(WaitUntil.Completed)).Value;
-                outputRT.Text += Environment.NewLine + "Zip Deploy Started for WhatsApp Function";
-                await FunctionAppHandler.ZipDeploy(user, json.WhatsAppFunctionZipDeployPath);
-                outputRT.Text += Environment.NewLine + "Zip Deploy for WhatsApp Function finished";
+                if (whatsAppFunctionCB.Text != "")
+                {
+                    var whatsAppSiteResource = (await SelectedGroup.GetWebSiteAsync(whatsAppFunctionCB.Text)).Value;
+                    PublishingUserResource user = (await whatsAppSiteResource.GetPublishingCredentialsAsync(WaitUntil.Completed)).Value;
+                    outputRT.Text += Environment.NewLine + "Zip Deploy Started for WhatsApp Function";
+                    await FunctionAppHandler.ZipDeploy(user, json.WhatsAppFunctionZipDeployPath);
+                    outputRT.Text += Environment.NewLine + "Zip Deploy for WhatsApp Function finished";
+                }
 
                 if (selectCosmosCB.Text != "")
                 {
                     var cosmosSiteResource = (await SelectedGroup.GetWebSiteAsync(selectCosmosCB.Text)).Value;
-                    user = (await cosmosSiteResource.GetPublishingCredentialsAsync(WaitUntil.Completed)).Value;
+                    PublishingUserResource user = (await cosmosSiteResource.GetPublishingCredentialsAsync(WaitUntil.Completed)).Value;
                     outputRT.Text += Environment.NewLine + "Zip Deploy Started for Cosmos REST API Function";
                     await FunctionAppHandler.ZipDeploy(user, json.CosmosRESTZipDeployPath);
                     outputRT.Text += Environment.NewLine + "Zip Deploy for Cosmos REST API Function finished";
